@@ -2,7 +2,8 @@
 from .client import LINE
 from types import *
 
-import os, sys, threading, time
+import os, sys, time
+from threading import Thread
 
 class OEPoll(object):
     OpInterrupt = {}
@@ -21,7 +22,7 @@ class OEPoll(object):
     def __execute(self, op, threading):
         try:
             if threading:
-                _td = threading.Thread(target=self.OpInterrupt[op.type](op))
+                _td = Thread(target=self.OpInterrupt[op.type](op))
                 _td.daemon = False
                 _td.start()
             else:
