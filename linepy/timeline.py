@@ -158,9 +158,9 @@ class Timeline(Channel):
         params = {'homeId': mid,'count': '1','auto': '0'}
         url = self.server.urlEncode(self.server.LINE_TIMELINE_MH, '/album/v3/album.json', params)
         r = self.server.postContent(url, data=data, headers=self.server.timelineHeaders)
-        if r.status_code != 201:
+        if r.status_code != 200:
             raise Exception('Create a new album failure.')
-        return True
+        return r.json()
 
     @loggedIn
     def deleteGroupAlbum(self, mid, albumId):
@@ -200,6 +200,7 @@ class Timeline(Channel):
     @loggedIn
     def addImageToAlbum(self, mid, albumId, path):
         file = open(path, 'rb').read()
+        #oid error :(
         params = {
             'oid': int(time.time()),
             'quality': '90',
@@ -212,7 +213,7 @@ class Timeline(Channel):
             'X-Line-Album': albumId,
             'x-obs-params': self.genOBSParams(params,'b64')
         })
-        r = self.server.getContent(self.server.LINE_OBS_DOMAIN + '/album/a/upload.nhn', data=file, headers=hr)
+        r = self.server.postContent(self.server.LINE_OBS_DOMAIN + '/album/a/upload.nhn', data=file, headers=hr)
         if r.status_code != 201:
             raise Exception('Add image to album failure.')
         return r.json()
